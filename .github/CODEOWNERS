@@ -1,0 +1,5 @@
+# Default owner for entire repository
+* @piterb
+
+# CI/workflow changes need explicit owner review
+.github/workflows/* @piterb
