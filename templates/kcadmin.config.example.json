@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "defaults": {
+    "target": "local"
+  },
+  "targets": {
+    "local": {
+      "server": "http://localhost:8080",
+      "admin": {
+        "username": "admin",
+        "password": "admin"
+      },
+      "docker": {
+        "composeFile": "kcadmin/runtime/docker-compose.yml",
+        "envFile": "kcadmin/runtime/.env",
+        "projectName": "keycloak-local"
+      }
+    },
+    "remote": {
+      "server": "https://id.example.com",
+      "admin": {
+        "usernameEnv": "KEYCLOAK_ADMIN",
+        "passwordEnv": "KEYCLOAK_ADMIN_PASSWORD"
+      }
+    }
+  },
+  "safety": {
+    "requireConfirmForDestructive": true,
+    "requireAllowRemoteMutations": true
+  }
+}

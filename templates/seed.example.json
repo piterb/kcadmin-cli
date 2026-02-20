@@ -1,0 +1,22 @@
+{
+  "users": [
+    {
+      "username": "local_tester",
+      "email": "local_tester@local.test",
+      "enabled": true,
+      "firstName": "Local",
+      "lastName": "Tester",
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "ChangeMe_Local_123!",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "app_user"
+      ]
+    }
+  ]
+}

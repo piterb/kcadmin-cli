@@ -1,34 +1,32 @@
 {
-  "name": "kcadmin-cli",
+  "name": "@piterb/kcadmin-cli",
   "version": "0.1.0",
-  "description": "CLI for kcadmin workflows",
-  "license": "MIT",
-  "type": "commonjs",
+  "description": "Reusable CLI foundation for Keycloak admin workflows.",
+  "type": "module",
   "bin": {
-    "kcadmin": "bin/kcadmin.js"
+    "kcadmin": "./src/cli.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test",
+    "test:unit": "node --test tests/unit",
+    "test:integration": "node --test tests/integration"
   },
   "files": [
-    "bin/",
-    "src/"
+    "src",
+    "templates",
+    "README.md",
+    "LICENSE"
   ],
-  "engines": {
-    "node": ">=20.0.0"
-  },
+  "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/<GITHUB_ORG_OR_USER>/kcadmin-cli.git"
+    "url": "git+https://github.com/piterb/kcadmin-cli.git"
   },
   "bugs": {
-    "url": "https://github.com/<GITHUB_ORG_OR_USER>/kcadmin-cli/issues"
+    "url": "https://github.com/piterb/kcadmin-cli/issues"
   },
-  "homepage": "https://github.com/<GITHUB_ORG_OR_USER>/kcadmin-cli#readme",
-  "scripts": {
-    "test": "node --test"
-  },
-  "main": "index.js",
-  "directories": {
-    "test": "tests"
-  },
-  "keywords": [],
-  "author": ""
+  "homepage": "https://github.com/piterb/kcadmin-cli#readme"
 }
