@@ -1,0 +1,34 @@
+{
+  "name": "kcadmin-cli",
+  "version": "0.1.0",
+  "description": "CLI for kcadmin workflows",
+  "license": "MIT",
+  "type": "commonjs",
+  "bin": {
+    "kcadmin": "bin/kcadmin.js"
+  },
+  "files": [
+    "bin/",
+    "src/"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/<GITHUB_ORG_OR_USER>/kcadmin-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/<GITHUB_ORG_OR_USER>/kcadmin-cli/issues"
+  },
+  "homepage": "https://github.com/<GITHUB_ORG_OR_USER>/kcadmin-cli#readme",
+  "scripts": {
+    "test": "node --test"
+  },
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "keywords": [],
+  "author": ""
+}
