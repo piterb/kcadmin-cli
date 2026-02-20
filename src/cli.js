@@ -16,17 +16,24 @@ import { printResult } from "./reporting/output.js";
 function usage() {
   console.log(`kcadmin CLI
 
+Purpose:
+  Manage Keycloak admin workflows with explicit, scriptable commands.
+  Safe defaults: destructive operations require explicit confirmation flags.
+
 Usage:
-  kcadmin init [--dir <folder>] [--force]
-  kcadmin up [--target <local|remote>]
-  kcadmin status [--target <local|remote>]
-  kcadmin down [--target <local|remote>] [--wipe]
-  kcadmin reset [--target <local|remote>] --confirm
-  kcadmin logs [--target <local|remote>]
-  kcadmin realm apply --file <realm.json> [--target <local|remote>]
+  kcadmin init [--dir <folder>] [--force]                                  Create kcadmin scaffold and example files
+  kcadmin up [--target <local|remote>]                                      Start local runtime and bootstrap defaults
+  kcadmin status [--target <local|remote>]                                  Show runtime/service status summary
+  kcadmin down [--target <local|remote>] [--wipe]                           Stop runtime (or full wipe with --wipe)
+  kcadmin reset [--target <local|remote>] --confirm                         Factory reset realms to master-only state
+  kcadmin logs [--target <local|remote>]                                    Stream runtime logs (local target)
+  kcadmin realm apply --file <realm.json> [--target <local|remote>]         Create or update realm from file
   kcadmin realm reset --file <realm.json> [--target <local|remote>] --confirm
+                                                                            Delete and recreate one realm from file
   kcadmin realm export --realm <name> --out <file> [--target <local|remote>]
+                                                                            Export realm definition to JSON file
   kcadmin seed apply --realm <name> --file <seed.json> [--target <local|remote>]
+                                                                            Upsert seed users and role mappings
 
 Global options:
   --dir <folder>                  (for init, default: kcadmin)
