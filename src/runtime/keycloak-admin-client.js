@@ -84,6 +84,13 @@ export class KeycloakAdminClient {
     return status === 200;
   }
 
+  async listRealms() {
+    const { data } = await this.adminRequest("/admin/realms", {
+      expected: [200]
+    });
+    return Array.isArray(data) ? data : [];
+  }
+
   async createRealm(realmRepresentation) {
     await this.adminRequest("/admin/realms", {
       method: "POST",

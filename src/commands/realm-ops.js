@@ -74,6 +74,26 @@ export async function runRealmReset({ ctx, file, confirm, allowRemoteMutations }
   return { action: "reset", realm };
 }
 
+export async function runFactoryReset({ ctx, confirm, allowRemoteMutations }) {
+  if (ctx.safety.requireConfirmForDestructive && !confirm) {
+    throw new CliError("factory reset requires --confirm", 2);
+  }
+  ensureRemoteMutationAllowed(ctx, allowRemoteMutations);
+
+  const client = clientFromCtx(ctx);
+  const realms = await client.listRealms();
+  const deleted = [];
+
+  for (const realmData of realms) {
+    const realm = realmData?.realm;
+    if (!realm || realm === "master") continue;
+    await client.deleteRealm(realm);
+    deleted.push(realm);
+  }
+
+  return { action: "factory-reset", kept: "master", deleted };
+}
+
 export async function runRealmExport({ ctx, realm, out }) {
   const client = clientFromCtx(ctx);
   const payload = await client.exportRealm(realm);

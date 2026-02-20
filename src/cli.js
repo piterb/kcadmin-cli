@@ -5,6 +5,7 @@ import { loadAndValidateConfig, resolveTargetContext } from "./config/load-confi
 import { runInitScaffold } from "./commands/init-scaffold.js";
 import { runDown, runDownWipe, runLogs, runStatus, runUp } from "./commands/local-runtime.js";
 import {
+  runFactoryReset,
   runRealmApply,
   runRealmExport,
   runRealmReset,
@@ -20,6 +21,7 @@ Usage:
   kcadmin up [--target <local|remote>]
   kcadmin status [--target <local|remote>]
   kcadmin down [--target <local|remote>] [--wipe]
+  kcadmin reset [--target <local|remote>] --confirm
   kcadmin logs [--target <local|remote>]
   kcadmin realm apply --file <realm.json> [--target <local|remote>]
   kcadmin realm reset --file <realm.json> [--target <local|remote>] --confirm
@@ -84,6 +86,24 @@ async function main() {
 
     if (parsed.kind === "logs") {
       await runLogs({ ctx });
+      return;
+    }
+
+    if (parsed.kind === "factory-reset") {
+      const result = await runFactoryReset({
+        ctx,
+        confirm: parsed.confirm,
+        allowRemoteMutations: parsed.allowRemoteMutations
+      });
+      const deletedSummary =
+        result.deleted.length === 0
+          ? "deleted realms: none"
+          : `deleted realms: ${result.deleted.join(", ")}`;
+      printResult("factory reset complete", [
+        `target: ${ctx.targetName}`,
+        `kept realm: ${result.kept}`,
+        deletedSummary
+      ]);
       return;
     }
 

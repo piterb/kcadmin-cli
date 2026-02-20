@@ -33,6 +33,13 @@ test("parses init command", () => {
   assert.equal(parsed.force, true);
 });
 
+test("parses factory reset command", () => {
+  const parsed = parseArgs(["reset", "--target", "local", "--confirm"]);
+  assert.equal(parsed.kind, "factory-reset");
+  assert.equal(parsed.target, "local");
+  assert.equal(parsed.confirm, true);
+});
+
 test("parses realm apply command", () => {
   const parsed = parseArgs(["realm", "apply", "--file", "realm.json", "--target", "remote"]);
   assert.equal(parsed.kind, "realm-apply");

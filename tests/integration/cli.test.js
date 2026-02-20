@@ -63,6 +63,20 @@ test("kcadmin realm reset requires --confirm", async () => {
   assert.match(result.stderr, /requires --confirm/);
 });
 
+test("kcadmin factory reset requires --confirm", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "kcadmin-it-"));
+  const file = join(dir, "config.json");
+  await writeFile(file, JSON.stringify(validConfig), "utf8");
+
+  const result = await runCli(
+    ["reset", "--config", file],
+    PACKAGE_ROOT,
+    { TEST_ADMIN_USER: "admin", TEST_ADMIN_PASS: "admin" }
+  );
+  assert.equal(result.code, 2);
+  assert.match(result.stderr, /factory reset requires --confirm/);
+});
+
 test("kcadmin init creates scaffold folder and files", async () => {
   const dir = await mkdtemp(join(tmpdir(), "kcadmin-it-"));
 

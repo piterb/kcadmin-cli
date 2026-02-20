@@ -11,6 +11,7 @@ Standalone npm package.
 - `kcadmin status`
 - `kcadmin down`
 - `kcadmin down --wipe` (full cleanup: containers, networks, volumes, images, orphans)
+- `kcadmin reset --confirm` (factory reset realms to master-only state without wiping Docker runtime)
 - `kcadmin logs`
 - `kcadmin realm apply --file <realm.json>`
 - `kcadmin realm reset --file <realm.json> --confirm`

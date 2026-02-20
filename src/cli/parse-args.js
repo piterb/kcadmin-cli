@@ -79,6 +79,7 @@ export function parseArgs(argv) {
   if (a === "status" && positionals.length === 1) return { kind: "status", ...opts };
   if (a === "logs" && positionals.length === 1) return { kind: "logs", ...opts };
   if (a === "init" && positionals.length === 1) return { kind: "init", ...opts };
+  if (a === "reset" && positionals.length === 1) return { kind: "factory-reset", ...opts };
 
   if (a === "realm" && b === "apply" && positionals.length === 2) {
     if (!opts.file) throw new CliError("missing required flag: --file <realm.json>", 2);
