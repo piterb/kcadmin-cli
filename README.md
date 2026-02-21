@@ -92,6 +92,16 @@ For this local bootstrap step, `kcadmin` uses `KEYCLOAK_ADMIN` and `KEYCLOAK_ADM
 - Remote mutations can require explicit `--allow-remote-mutations` (based on config safety settings).
 - Commands fail with explicit non-zero exit codes on validation/runtime errors.
 
+## Debugging and diagnostics
+
+Use `--verbose` to print resolved runtime context (config path, target, server URL, safety flags):
+
+```bash
+kcadmin realm export --target remote --realm master --out ./master.json --verbose
+```
+
+This is useful when you want to verify which config file and target URL are actually being used.
+
 ## Typical workflow in a project
 
 ```bash

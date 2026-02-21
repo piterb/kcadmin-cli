@@ -11,6 +11,7 @@ function parseOptions(argv) {
     confirm: false,
     force: false,
     wipe: false,
+    verbose: false,
     allowRemoteMutations: false
   };
   const positionals = [];
@@ -37,6 +38,10 @@ function parseOptions(argv) {
     }
     if (token === "--wipe" || token === "--purge") {
       opts.wipe = true;
+      continue;
+    }
+    if (token === "--verbose") {
+      opts.verbose = true;
       continue;
     }
 

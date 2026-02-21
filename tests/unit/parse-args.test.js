@@ -41,10 +41,11 @@ test("parses factory reset command", () => {
 });
 
 test("parses realm apply command", () => {
-  const parsed = parseArgs(["realm", "apply", "--file", "realm.json", "--target", "remote"]);
+  const parsed = parseArgs(["realm", "apply", "--file", "realm.json", "--target", "remote", "--verbose"]);
   assert.equal(parsed.kind, "realm-apply");
   assert.equal(parsed.file, "realm.json");
   assert.equal(parsed.target, "remote");
+  assert.equal(parsed.verbose, true);
 });
 
 test("requires --confirm for parser output not enforced here but captured", () => {

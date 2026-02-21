@@ -13,6 +13,11 @@ import {
 } from "./commands/realm-ops.js";
 import { printResult } from "./reporting/output.js";
 
+function verboseLog(enabled, message) {
+  if (!enabled) return;
+  console.error(`[kcadmin:verbose] ${message}`);
+}
+
 function usage() {
   console.log(`kcadmin CLI
 
@@ -41,6 +46,7 @@ Global options:
   --wipe                          (for down, remove volumes/images/orphans)
   --target <local|remote>         (default: local)
   --config <path>                 (default: kcadmin/kcadmin.config.json)
+  --verbose                       print resolved config/target diagnostics
   --allow-remote-mutations        required when config safety demands it
   --help`);
 }
@@ -60,9 +66,15 @@ async function main() {
     }
 
     const configPath = parsed.configPath ?? "kcadmin/kcadmin.config.json";
+    verboseLog(parsed.verbose, `config path: ${configPath}`);
 
     const config = await loadAndValidateConfig(configPath);
     const ctx = resolveTargetContext(config, parsed.target);
+    verboseLog(parsed.verbose, `command: ${parsed.kind}`);
+    verboseLog(parsed.verbose, `target: ${ctx.targetName}`);
+    verboseLog(parsed.verbose, `server: ${ctx.server}`);
+    verboseLog(parsed.verbose, `requireConfirmForDestructive: ${ctx.safety.requireConfirmForDestructive}`);
+    verboseLog(parsed.verbose, `requireAllowRemoteMutations: ${ctx.safety.requireAllowRemoteMutations}`);
 
     if (parsed.kind === "up") {
       await runUp({ ctx });
@@ -156,9 +168,20 @@ async function main() {
   } catch (error) {
     if (error instanceof CliError) {
       console.error(error.message);
+      if (process.argv.includes("--verbose") && error.cause) {
+        console.error(`[kcadmin:verbose] cause: ${String(error.cause)}`);
+      }
       process.exit(error.exitCode);
     }
-    console.error(error instanceof Error ? error.message : String(error));
+    if (error instanceof Error) {
+      console.error(error.message);
+      if (process.argv.includes("--verbose")) {
+        if (error.cause) console.error(`[kcadmin:verbose] cause: ${String(error.cause)}`);
+        if (error.stack) console.error(`[kcadmin:verbose] stack:\n${error.stack}`);
+      }
+    } else {
+      console.error(String(error));
+    }
     process.exit(1);
   }
 }
