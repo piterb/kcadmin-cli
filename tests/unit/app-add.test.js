@@ -37,6 +37,8 @@ test("runAppAdd creates dedicated spa-api app stack files", async () => {
   assert.match(variablesTf, /variable "web_spa_redirect_uris"/);
   assert.doesNotMatch(variablesTf, /validation \{/);
   assert.match(outputsTf, /output "web_spa_client_id"/);
+  assert.match(outputsTf, /output "spa_client_id"/);
+  assert.match(outputsTf, /output "api_client_id"/);
 });
 
 test("runAppAdd rejects duplicate app stack without --force", async () => {

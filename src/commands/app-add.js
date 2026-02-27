@@ -176,6 +176,16 @@ output "${variablePrefix}_api_client_id" {
   description = "API client id for ${appName}"
   value       = keycloak_openid_client.${variablePrefix}_api.client_id
 }
+
+output "spa_client_id" {
+  description = "Generic SPA client id contract for consumer stacks"
+  value       = keycloak_openid_client.${variablePrefix}_spa.client_id
+}
+
+output "api_client_id" {
+  description = "Generic API client id contract for consumer stacks"
+  value       = keycloak_openid_client.${variablePrefix}_api.client_id
+}
 `;
 }
 
