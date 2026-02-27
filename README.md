@@ -12,7 +12,7 @@ Standalone npm package.
 - applying seed users/roles in a repeatable way
 - keeping local and remote target handling consistent
 
-The goal is to replace ad-hoc scripts with explicit commands that are easy to run manually and in CI.
+The goal is to replace ad-hoc scripts with explicit commands that are easy to run manually and repeat locally.
 
 ## Quick start
 
@@ -30,10 +30,39 @@ kcadmin realm apply --file kcadmin/realms/example-realm.json
 kcadmin seed apply --realm example --file kcadmin/seeds/example-seed.json
 ```
 
+Bootstrap Terraform identity skeleton for an app team:
+
+```bash
+kcadmin app-init --realm jobhunter-tst --env tst
+kcadmin app-add --profile spa-api --name web
+```
+
+Then work with Terraform locally:
+
+```bash
+cd identity/terraform/base
+cp terraform.tst.tfvars.example terraform.tst.tfvars
+terraform init
+terraform plan  -var-file=terraform.tst.tfvars -state=terraform.tst.tfstate
+terraform apply -var-file=terraform.tst.tfvars -state=terraform.tst.tfstate
+```
+
 ## Command reference
 
 - `kcadmin init [--dir <folder>] [--force]`
   - Create scaffold with config, realm/seed examples, and runtime files.
+- `kcadmin app-init --realm <realm_name> [--out <path>] [--env <env>] [--force] [--dry-run]`
+  - Generate base Keycloak Terraform skeleton.
+  - Creates `identity/terraform/base` and `identity/terraform/apps`.
+  - In base stack it generates `terraform.<env>.tfvars.example` for local-only usage.
+  - Default output folder is `identity`.
+- `kcadmin app-add --profile <profile> --name <name> [--out <path>] [--force]`
+  - Create dedicated app stack in `identity/terraform/apps/<name>`.
+  - Supported profiles now: `spa-api`.
+  - You can call this multiple times for different app names (e.g. `web`, `admin`).
+  - Requires initialized scaffold from `kcadmin app-init`.
+  - Reads shared Keycloak connection values from `identity/terraform/base/terraform.tfstate`.
+  - Generates `terraform.<env>.tfvars.example` only for app-specific inputs.
 - `kcadmin up [--target <local|remote>]`
   - Start local runtime (`local` target) and run bootstrap step for local admin setup.
 - `kcadmin status [--target <local|remote>]`
@@ -101,6 +130,86 @@ kcadmin realm export --target remote --realm master --out ./master.json --verbos
 ```
 
 This is useful when you want to verify which config file and target URL are actually being used.
+
+Use dry-run for scaffold planning:
+
+```bash
+kcadmin app-init --realm jobhunter-tst --dry-run
+```
+
+## Identity Terraform structure
+
+```text
+identity/
+  terraform/
+    base/
+      versions.tf
+      variables.tf
+      main.tf
+      outputs.tf
+      terraform.<env>.tfvars.example
+    apps/
+      <app-name>/
+        versions.tf
+        variables.tf
+        main.tf
+        outputs.tf
+        terraform.<env>.tfvars.example
+```
+
+## Local Terraform inputs
+
+The generated stacks are local-first. Fill Terraform inputs in `terraform.<env>.tfvars` per stack:
+
+- base stack:
+  - `keycloak_url`
+  - `keycloak_client_id`
+  - `keycloak_client_secret`
+  - `realm_name`
+  - `environment`
+- app stack adds:
+  - optional `base_state_path`
+  - `<app>_spa_redirect_uris`
+  - `<app>_spa_web_origins`
+  - `<app>_api_audience`
+  - `<app>_enable_direct_access_grants`
+
+App stacks read shared values (`keycloak_url`, `keycloak_client_id`, `keycloak_client_secret`, `realm_name`, `environment`) from the base Terraform state file. That means:
+
+1. run `terraform apply` in `identity/terraform/base` first
+2. then run `terraform plan/apply` in `identity/terraform/apps/<app>`
+
+Recommended commands:
+
+```bash
+cd identity/terraform/base
+cp terraform.tst.tfvars.example terraform.tst.tfvars
+terraform init
+terraform plan  -var-file=terraform.tst.tfvars -state=terraform.tst.tfstate
+terraform apply -var-file=terraform.tst.tfvars -state=terraform.tst.tfstate
+
+cd ../apps/web
+cp terraform.tst.tfvars.example terraform.tst.tfvars
+terraform init
+terraform plan  -var-file=terraform.tst.tfvars -state=terraform.tst.tfstate
+terraform apply -var-file=terraform.tst.tfvars -state=terraform.tst.tfstate
+```
+
+## Remove an app stack
+
+To remove one app stack safely (example: `web`):
+
+1. Destroy managed Keycloak resources for that app stack:
+```bash
+cd identity/terraform/apps/web
+terraform init
+terraform destroy -auto-approve
+```
+2. Remove stack files:
+```bash
+rm -rf identity/terraform/apps/web
+```
+3. Commit the deletion change.
 
 ## Typical workflow in a project
 

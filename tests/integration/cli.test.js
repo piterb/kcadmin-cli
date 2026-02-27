@@ -90,3 +90,40 @@ test("kcadmin init creates scaffold folder and files", async () => {
   await access(join(dir, "kcadmin", "runtime", "docker-compose.yml"));
   await access(join(dir, "kcadmin", "runtime", ".env"));
 });
+
+test("kcadmin app-init creates terraform scaffold", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "kcadmin-it-"));
+
+  const result = await runCli(["app-init", "--realm", "jobhunter-tst"], dir);
+
+  assert.equal(result.code, 0);
+  assert.match(result.stdout, /app-init complete/);
+  assert.match(result.stdout, /terraform init && terraform plan/);
+
+  await access(join(dir, "identity", "terraform", "base", "main.tf"));
+  await access(join(dir, "identity", "terraform", "base", "variables.tf"));
+  await access(join(dir, "identity", "terraform", "base", "terraform.tst.tfvars.example"));
+  await access(join(dir, "identity", "terraform", "apps"));
+  await access(join(dir, "identity", "README.md"));
+});
+
+test("kcadmin app-add creates dedicated app stack", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "kcadmin-it-"));
+
+  const initResult = await runCli(["app-init", "--realm", "jobhunter-tst"], dir);
+  assert.equal(initResult.code, 0);
+
+  const addResult = await runCli(["app-add", "--profile", "spa-api", "--name", "web"], dir);
+  assert.equal(addResult.code, 0);
+  assert.match(addResult.stdout, /app-add complete/);
+  assert.match(addResult.stdout, /profile: spa-api/);
+  await access(join(dir, "identity", "terraform", "apps", "web", "main.tf"));
+});
+
+test("kcadmin app-add fails before scaffold init", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "kcadmin-it-"));
+  const result = await runCli(["app-add", "--profile", "spa-api", "--name", "web"], dir);
+
+  assert.equal(result.code, 2);
+  assert.match(result.stderr, /run: kcadmin app-init --realm/);
+});
