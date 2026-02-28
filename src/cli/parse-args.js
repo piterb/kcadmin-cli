@@ -4,13 +4,19 @@ function parseOptions(argv) {
   const opts = {
     configPath: undefined,
     target: "local",
+    env: "tst",
+    profile: undefined,
+    name: undefined,
+    out: undefined,
     file: undefined,
     realm: undefined,
-    out: undefined,
     dir: undefined,
     confirm: false,
     force: false,
     wipe: false,
+    verbose: false,
+    dryRun: false,
+    withExampleValues: true,
     allowRemoteMutations: false
   };
   const positionals = [];
@@ -39,6 +45,22 @@ function parseOptions(argv) {
       opts.wipe = true;
       continue;
     }
+    if (token === "--dry-run") {
+      opts.dryRun = true;
+      continue;
+    }
+    if (token === "--with-example-values") {
+      opts.withExampleValues = true;
+      continue;
+    }
+    if (token === "--without-example-values" || token === "--no-with-example-values") {
+      opts.withExampleValues = false;
+      continue;
+    }
+    if (token === "--verbose") {
+      opts.verbose = true;
+      continue;
+    }
 
     const next = argv[i + 1];
     if (!next || next.startsWith("--")) {
@@ -47,9 +69,12 @@ function parseOptions(argv) {
 
     if (token === "--config") opts.configPath = next;
     else if (token === "--target") opts.target = next;
+    else if (token === "--env") opts.env = next;
+    else if (token === "--profile") opts.profile = next;
+    else if (token === "--name") opts.name = next;
+    else if (token === "--out") opts.out = next;
     else if (token === "--file") opts.file = next;
     else if (token === "--realm") opts.realm = next;
-    else if (token === "--out") opts.out = next;
     else if (token === "--dir") opts.dir = next;
     else throw new CliError(`unknown option: ${token}`, 2);
 
@@ -79,6 +104,15 @@ export function parseArgs(argv) {
   if (a === "status" && positionals.length === 1) return { kind: "status", ...opts };
   if (a === "logs" && positionals.length === 1) return { kind: "logs", ...opts };
   if (a === "init" && positionals.length === 1) return { kind: "init", ...opts };
+  if (a === "app-init" && positionals.length === 1) {
+    if (!opts.realm) throw new CliError("missing required flag: --realm <realm_name>", 2);
+    return { kind: "app-init", ...opts };
+  }
+  if (a === "app-add" && positionals.length === 1) {
+    if (!opts.profile) throw new CliError("missing required flag: --profile <profile>", 2);
+    if (!opts.name) throw new CliError("missing required flag: --name <name>", 2);
+    return { kind: "app-add", ...opts };
+  }
   if (a === "reset" && positionals.length === 1) return { kind: "factory-reset", ...opts };
 
   if (a === "realm" && b === "apply" && positionals.length === 2) {
