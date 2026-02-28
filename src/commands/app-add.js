@@ -157,6 +157,16 @@ resource "keycloak_openid_client" "${variablePrefix}_api" {
   service_accounts_enabled     = true
 }
 
+resource "keycloak_openid_audience_protocol_mapper" "${variablePrefix}_spa_api_audience" {
+  realm_id  = data.keycloak_realm.target.id
+  client_id = keycloak_openid_client.${variablePrefix}_spa.id
+  name      = "${appName} API audience"
+
+  included_client_audience = keycloak_openid_client.${variablePrefix}_api.client_id
+  add_to_access_token      = true
+  add_to_id_token          = false
+}
+
 resource "keycloak_role" "${variablePrefix}_app_user" {
   realm_id    = data.keycloak_realm.target.id
   name        = "${appName}_app_user"

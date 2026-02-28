@@ -34,6 +34,9 @@ test("runAppAdd creates dedicated spa-api app stack files", async () => {
   assert.match(mainTf, /lifecycle \{/);
   assert.match(mainTf, /Wildcards in web_spa_redirect_uris are not allowed in prd/);
   assert.match(mainTf, /resource "keycloak_openid_client" "web_spa"/);
+  assert.match(mainTf, /resource "keycloak_openid_audience_protocol_mapper" "web_spa_api_audience"/);
+  assert.match(mainTf, /included_client_audience = keycloak_openid_client\.web_api\.client_id/);
+  assert.match(mainTf, /add_to_access_token\s+= true/);
   assert.match(variablesTf, /variable "web_spa_redirect_uris"/);
   assert.doesNotMatch(variablesTf, /validation \{/);
   assert.match(outputsTf, /output "web_spa_client_id"/);
