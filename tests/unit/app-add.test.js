@@ -26,18 +26,22 @@ test("runAppAdd creates dedicated spa-api app stack files", async () => {
   assert.match(variablesTf, /variable "base_state_path"/);
   assert.match(tfvarsExample, /\.\.\/\.\.\/base\/terraform\.tst\.tfstate/);
   assert.match(tfvarsExample, /web_spa_redirect_uris/);
+  assert.match(tfvarsExample, /web_spa_post_logout_redirect_uris/);
 
   assert.match(mainTf, /data "terraform_remote_state" "base"/);
   assert.match(mainTf, /path = var\.base_state_path/);
   assert.match(mainTf, /realm = local\.realm_name/);
   assert.match(mainTf, /client_id = "web-spa-\$\{local\.environment\}"/);
+  assert.match(mainTf, /valid_post_logout_redirect_uris = var\.web_spa_post_logout_redirect_uris/);
   assert.match(mainTf, /lifecycle \{/);
   assert.match(mainTf, /Wildcards in web_spa_redirect_uris are not allowed in prd/);
+  assert.match(mainTf, /Wildcards in web_spa_post_logout_redirect_uris are not allowed in prd/);
   assert.match(mainTf, /resource "keycloak_openid_client" "web_spa"/);
   assert.match(mainTf, /resource "keycloak_openid_audience_protocol_mapper" "web_spa_api_audience"/);
   assert.match(mainTf, /included_client_audience = keycloak_openid_client\.web_api\.client_id/);
   assert.match(mainTf, /add_to_access_token\s+= true/);
   assert.match(variablesTf, /variable "web_spa_redirect_uris"/);
+  assert.match(variablesTf, /variable "web_spa_post_logout_redirect_uris"/);
   assert.doesNotMatch(variablesTf, /validation \{/);
   assert.match(outputsTf, /output "web_spa_client_id"/);
   assert.match(outputsTf, /output "spa_client_id"/);

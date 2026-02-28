@@ -74,6 +74,11 @@ variable "${variablePrefix}_spa_web_origins" {
   type        = list(string)
 }
 
+variable "${variablePrefix}_spa_post_logout_redirect_uris" {
+  description = "Allowed post-logout redirect URIs for SPA '${appName}'"
+  type        = list(string)
+}
+
 variable "${variablePrefix}_api_audience" {
   description = "Audience value for API '${appName}'"
   type        = string
@@ -126,6 +131,7 @@ resource "keycloak_openid_client" "${variablePrefix}_spa" {
 
   pkce_code_challenge_method = "S256"
   valid_redirect_uris        = var.${variablePrefix}_spa_redirect_uris
+  valid_post_logout_redirect_uris = var.${variablePrefix}_spa_post_logout_redirect_uris
   web_origins                = var.${variablePrefix}_spa_web_origins
 
   lifecycle {
@@ -141,6 +147,13 @@ resource "keycloak_openid_client" "${variablePrefix}_spa" {
         for origin in var.${variablePrefix}_spa_web_origins : !strcontains(origin, "*")
       ])
       error_message = "Wildcards in ${variablePrefix}_spa_web_origins are not allowed in prd."
+    }
+
+    precondition {
+      condition = local.environment != "prd" || alltrue([
+        for uri in var.${variablePrefix}_spa_post_logout_redirect_uris : !strcontains(uri, "*")
+      ])
+      error_message = "Wildcards in ${variablePrefix}_spa_post_logout_redirect_uris are not allowed in prd."
     }
   }
 }
@@ -212,6 +225,10 @@ ${variablePrefix}_spa_redirect_uris = [
 ]
 
 ${variablePrefix}_spa_web_origins = [
+  "http://localhost:3000"
+]
+
+${variablePrefix}_spa_post_logout_redirect_uris = [
   "http://localhost:3000"
 ]
 
